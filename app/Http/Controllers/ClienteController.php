@@ -15,9 +15,9 @@ class ClienteController extends Controller
      */
     public function index()
     {
-        $clientes = Cliente::all();
+        $clientes = Cliente::with('endereco')->get();
 
-        return view('cliente.index', compact('clientes'));
+        return response()->json($clientes);
     }
 
     /**
@@ -79,7 +79,11 @@ class ClienteController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $cliente = Cliente::findOrFail($id);
+        $cliente->update($request->all());
+        $cliente->endereco->update($request->all());
+
+        return redirect()->back();
     }
 
     /**
@@ -90,6 +94,9 @@ class ClienteController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $cliente = Cliente::findOrFail($id);
+        $cliente->delete();
+
+        return redirect()->action('ClienteController@index');
     }
 }
