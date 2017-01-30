@@ -15,7 +15,7 @@ class ClienteController extends Controller
      */
     public function index()
     {
-        $clientes = Cliente::with('endereco')->get();
+        $clientes = Cliente::with('endereco')->orderBy('nome')->get();
 
         return response()->json($clientes);
     }
@@ -41,7 +41,7 @@ class ClienteController extends Controller
         $endereco = Endereco::create($request->all());
         $endereco->cliente()->create($request->all());
 
-        return redirect()->back();
+        return redirect()->action('ClienteController@index');
     }
 
     /**
@@ -52,9 +52,9 @@ class ClienteController extends Controller
      */
     public function show($id)
     {
-        $cliente = Cliente::findOrFail($id);
+        $cliente = Cliente::with('endereco')->find($id);
 
-        return view('cliente.show', compact('cliente'));
+        return response()->json($cliente);
     }
 
     /**
@@ -83,7 +83,7 @@ class ClienteController extends Controller
         $cliente->update($request->all());
         $cliente->endereco->update($request->all());
 
-        return redirect()->back();
+        return redirect()->action('ClienteController@show', $cliente->id);
     }
 
     /**
